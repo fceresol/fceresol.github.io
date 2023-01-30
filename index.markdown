@@ -7,3 +7,12 @@ layout: docs
 
 Welcome to my blog! 
 select a post on the right side to start
+
+<ul>
+  {% for post in site.posts %}
+    <li>
+      <a href="{{ post.url }}">{{ post.title }}</a><br/>
+      {{ post.excerpt }}
+    </li>
+  {% endfor %}
+</ul>
