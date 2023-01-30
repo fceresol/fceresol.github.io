@@ -17,20 +17,26 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-
+google_analytics: G-FNYN185MJE
 domain: fceresol.github.io
 url: https://fceresol.github.io
-baseurl: /fceresol.github.io/docs/
-title: Your awesome title
-email: your-email@example.com
+#baseurl: /fceresol.github.io/docs/
+title: Tech tips on RedHat technologies
+email: filippo.ceresoli@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+  In this blog I'd like to share useful tips, experiments and solutions I found on my day-by-day
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: jekyllrb
+#url: "" # the base hostname & protocol for your site, e.g. http://example.com
+#twitter_username: jekyllrb
 github_username:  fceresol
+
+collections:
+  pam:
+    output: true
+  3scale:
+    output: true
+  servicemesh:
+    output: true
 
 # Build settings
 #theme: minima
@@ -38,6 +44,26 @@ remote_theme: pages-themes/hacker@v0.2.0
 plugins:
   - jekyll-remote-theme 
   - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-toc
+  - jemoji
+
+#kramdown:
+#  syntax_highlighter: coderay
+#  syntax_highlighter_opts:
+#    line_numbers: table
+#    bold_every: 5
+
+sass:
+  style: compressed
+
+defaults:
+  -
+    scope:
+      path: "" # an empty string here means all files in the project
+    values:
+      author: Filippo Ceresoli
 
 # Exclude from processing.
 # The following items will not be processed, by default.

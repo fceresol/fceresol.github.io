@@ -1,0 +1,72 @@
+<div class="unit one-quarter"> <!-- hide-on-mobiles -->
+  <aside>
+    {%- assign cats = site.categories -%}
+
+    <!--categories: {{ cats  }}<br/>-->
+    
+    {%- assign unique_categories = "" | split: "/" -%}
+    
+    {%- for cat in cats -%}
+      {%- assign unique_categories = unique_categories | push: cat[0] -%}
+    {%- endfor -%}
+    
+    {%- assign unique_categories = unique_categories | uniq -%}
+    {%- assign unique_categories = unique_categories | sort -%}
+    
+   
+    {%- for filterCategory in unique_categories -%}
+          
+        {%- assign categoryPost = site.categories[filterCategory] -%}
+        
+        {%- assign postGroupedBySub = categoryPost | group_by: "subcategory" -%}
+    
+        
+        {%- assign postGroupedBySub = postGroupedBySub | sort: "name" , "last" -%}
+        
+        <h3>{{ filterCategory }}</h3>
+        <ul>
+        
+        {%- assign deferredPosts = nil -%}
+        
+        {%- for subcategoryPosts in postGroupedBySub -%}
+    
+            {%- if subcategoryPosts.name != blank -%}
+                {%assign subcategoryName = subcategoryPosts.name%}
+                {%- assign postToDefer = false -%}
+            {%- else -%}
+                {%- assign deferredPosts = subcategoryPosts.items -%}
+                {%- assign postToDefer = true -%}
+            {%- endif -%}
+        
+            {%- unless postToDefer -%}
+                <li><h4>{{ subcategoryName }}</h4>
+                    <ul>
+                {%- for post in subcategoryPosts.items -%}
+               
+                    <li id="side-menu-post-title"><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
+
+                {%- endfor -%}
+                </ul>
+            {%- endunless -%}
+            <br/>
+            </li>
+        {%- endfor -%}
+            
+        {%- if deferredPosts -%}
+            <li><h4>other posts (uncategorized)</h4>
+                <ul>
+            {%- for post in deferredPosts -%}
+                <li id="side-menu-post-title"><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></li>
+            {%- endfor -%}
+            </ul></li>
+    
+        {%- endif -%} 
+          </ul>
+          
+        </li>
+        
+    {%- endfor -%}
+    </ul>
+    
+  </aside>
+</div>

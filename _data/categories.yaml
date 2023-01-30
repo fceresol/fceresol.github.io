@@ -1,0 +1,14 @@
+- category: PAM
+  subcategories: 
+    - name: OpenShift
+    - name: General Tips
+- category: 3Scale
+  subcategories: 
+    - name: Developer Portal
+    - name: General Tips
+    - name: Configuration
+- category: ServiceMesh
+  subcategories: 
+    - name: Integration
+    - name: Configuration
+  
