@@ -4,3 +4,4 @@ _site
 .jekyll-metadata
 start_jekyll.sh
 vendor
+_config_local.yml
