@@ -19,9 +19,14 @@ after enabling the integration by setting **org.kie.kafka.server.ext.disabled** 
 | org.kie.server.jbpm-kafka.ext.allow.auto.create.topics | Allow automatic topic creation | true | true |
 | org.kie.server.jbpm-kafka.ext.group.id | A unique string that identifies the group to which this Kafka message consumer belong | jbpm-consumer | true |
 | org.kie.server.jbpm-kafka.ext.acks | The number of acknowledgements that the Kafka leader must receive before marking the request as complete | 1 | true |
-| org.kie.server.jbpm-kafka.ext.max.block.ms | The number of milliseconds for which the publish method blocks in milliseconds | 2000 | true
+| org.kie.server.jbpm-kafka.ext.max.block.ms | The number of milliseconds for which the publish method blocks in milliseconds | 2000 | true |
 
-indeed this was true only before RHPAM 7.12, because in JBPM 7.56 the class handling the properties changed allowing the user to specify every Kafka client attribute by prefixing it with **org.kie.server.jbpm-kafka.ext.**
+<p><!-- empty paragraph left to avoid  include to break up the table --></p>
+
+{%- capture warning -%}indeed this was true only before <b>RHPAM 7.12</b>, because in kie community version <b>7.56</b> the class handling the properties changed allowing the user to specify every Kafka client attribute by prefixing it with <b>org.kie.server.jbpm-kafka.ext.</b>{%- endcapture -%}
+
+{%- include warning.html content=warning -%}
+
 
 for exaple in order to configure the connectivity using SSL and SCRAM autentication the system properties will be:
 ~~~
@@ -35,9 +40,13 @@ org.kie.server.jbpm-kafka.ext.ssl.truststore.location="/trust/store/mount/path/s
 org.kie.server.jbpm-kafka.ext.ssl.truststore.password="********"
 org.kie.server.jbpm-kafka.ext.ssl.truststore.type="PKCS12"
 ~~~
+
 further parameters can be found in [Official Kafka Documentation (producer configs)][kafka-doc-producer] and [Official Kafka Documentation (consumer configs)][kafka-doc-consumer]
 
-even if both consumer and producer properties are specified using the same configuration pattern, the extension will configure the producers and the consumers using only the correct configurations.
+{%- capture note -%}even if both consumer and producer properties are specified using the same configuration pattern, the extension will configure the producers and the consumers using only the correct configurations.{%- endcapture -%}
+
+{%- include note.html content=note -%}
+
 
 [kafka-doc-producer]: https://kafka.apache.org/documentation/#producerconfigs
 [kafka-doc-consumer]: https://kafka.apache.org/documentation/#consumerconfigs
