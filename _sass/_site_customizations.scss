@@ -102,3 +102,21 @@
 .alert-danger .alert-link {
     color: #843534
 }
+
+
+.three-column-larger-central th:first-of-type {
+    width: 25%;
+    overflow-wrap: break-word;
+}
+.three-column-larger-central th:nth-of-type(2) {
+    width: 50%;
+    overflow-wrap: break-word;
+}
+.three-column-larger-central th:nth-of-type(3) {
+    width: 25%;
+    overflow-wrap: break-word;
+}
+
+.three-column-larger-central td:nth-of-type(3) {
+    word-break: break-all;
+}

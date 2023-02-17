@@ -100,6 +100,7 @@ in order to simplify the service monitor configuration, the labels:
 - app
 - application
 - service
+  
 should be set with the same value already set in the existing service (the operator creates the service with the same name as the corresponding deployment config)
 
 here is an example for a service related to the kie-app **rhpam-app-01** which will expose the default prometheus port (9799)
@@ -173,7 +174,7 @@ after that the secret could be created
 
 ~~~bash
 oc create secret generic rhpam-monitor-creds \
- --from-literal=username=${ADMIN_USER}
+ --from-literal=username=${ADMIN_USER} \
  --from-literal=password=${ADMIN_PASSWORD}
 
 ~~~
@@ -230,145 +231,147 @@ The steps for configuring Grafana are:
 
 ### Data Source creation ###
 
-In order to create the Grafana datasource, first the Thanos Querier token and endpoint must be extracted from OpenShift:
+In order to create the Grafana datasource, first Thanos Querier token and endpoint must be extracted from OpenShift:
 
-according to [Openshift Documentation - Monitoring For user defined projects](https://docs.openshift.com/container-platform/4.6/monitoring/enabling-monitoring-for-user-defined-projects.html) the commands for extracting the Thanos Querier url and token are:
+according to [Openshift Documentation - Monitoring For user defined projects](https://docs.openshift.com/container-platform/4.6/monitoring/enabling-monitoring-for-user-defined-projects.html) the commands for extracting Thanos Querier url and token are:
 
 
 
-1.    Extract a token to connect to Prometheus:
-~~~bash
+1. Extract a token to connect to Prometheus:   
+
+    ~~~ bash
     $ SECRET=`oc get secret -n openshift-user-workload-monitoring | grep  prometheus-user-workload-token | head -n 1 | awk '{print $1 }'`
-~~~
-
-~~~bash
+    
     $ TOKEN=`echo $(oc get secret $SECRET -n openshift-user-workload-monitoring -o json | jq -r '.data.token') | base64 -d`
-~~~
+    ~~~
 
-2.    Extract your route host:
-~~~bash
+2. Extract your route host:
+   
+    ~~~ bash
     $ THANOS_QUERIER_HOST=`oc get route thanos-querier -n openshift-monitoring -o json | jq -r '.spec.host'`
-~~~
+    ~~~
 
-3.    Test the extracted values by quering the metrics of your services in the command line. For example:
-~~~bash
+3. Test the extracted values by quering the metrics of your services in the command line. For example:
+   
+    ~~~ bash
     $ NAMESPACE=pam-monitor-01
 
     $ curl -X GET -kG "https://$THANOS_QUERIER_HOST/api/v1/query?" --data-urlencode "query=up{namespace='$NAMESPACE'}" -H "Authorization: Bearer $TOKEN"
-~~~
+    ~~~
 
     The output will show you the duration that your application pods have been up.
+
     Example output
 
-~~~json
-{
-  "status": "success",
-  "data": {
-    "resultType": "vector",
-    "result": [
-      {
-        "metric": {
-          "__name__": "up",
-          "container": "rhpam-app-01-kieserver",
-          "endpoint": "http",
-          "instance": "10.217.0.60:8080",
-          "job": "rhpam-app-01-kieserver",
-          "namespace": "pam-monitor-01",
-          "pod": "rhpam-app-01-kieserver-1-jszg7",
-          "prometheus": "openshift-user-workload-monitoring/user-workload",
-          "service": "rhpam-app-01-kieserver"
-        },
-        "value": [
-          1637767954.774,
-          "1"
-        ]
-      },
-      {
-        "metric": {
-          "__name__": "up",
-          "endpoint": "cr-metrics",
-          "instance": "10.217.0.56:8686",
-          "job": "business-automation-operator-metrics",
-          "namespace": "pam-monitor-01",
-          "pod": "business-automation-operator-55f56f5bd8-tm2fv",
-          "prometheus": "openshift-user-workload-monitoring/user-workload",
-          "service": "business-automation-operator-metrics"
-        },
-        "value": [
-          1637767954.774,
-          "1"
-        ]
-      },
-      {
-        "metric": {
-          "__name__": "up",
-          "endpoint": "http-metrics",
-          "instance": "10.217.0.56:8383",
-          "job": "business-automation-operator-metrics",
-          "namespace": "pam-monitor-01",
-          "pod": "business-automation-operator-55f56f5bd8-tm2fv",
-          "prometheus": "openshift-user-workload-monitoring/user-workload",
-          "service": "business-automation-operator-metrics"
-        },
-        "value": [
-          1637767954.774,
-          "1"
-        ]
-      },
-      {
-        "metric": {
-          "__name__": "up",
-          "endpoint": "prometheus",
-          "instance": "10.217.0.60:9799",
-          "job": "rhpam-app-01-kieserver-prometheus",
-          "namespace": "pam-monitor-01",
-          "pod": "rhpam-app-01-kieserver-1-jszg7",
-          "prometheus": "openshift-user-workload-monitoring/user-workload",
-          "service": "rhpam-app-01-kieserver-prometheus"
-        },
-        "value": [
-          1637767954.774,
-          "1"
+    ~~~json
+    {
+      "status": "success",
+      "data": {
+        "resultType": "vector",
+        "result": [
+          {
+            "metric": {
+              "__name__": "up",
+              "container": "rhpam-app-01-kieserver",
+              "endpoint": "http",
+              "instance": "10.217.0.60:8080",
+              "job": "rhpam-app-01-kieserver",
+              "namespace": "pam-monitor-01",
+              "pod": "rhpam-app-01-kieserver-1-jszg7",
+              "prometheus": "openshift-user-workload-monitoring/user-workload",
+              "service": "rhpam-app-01-kieserver"
+            },
+            "value": [
+              1637767954.774,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "up",
+              "endpoint": "cr-metrics",
+              "instance": "10.217.0.56:8686",
+              "job": "business-automation-operator-metrics",
+              "namespace": "pam-monitor-01",
+              "pod": "business-automation-operator-55f56f5bd8-tm2fv",
+              "prometheus": "openshift-user-workload-monitoring/user-workload",
+              "service": "business-automation-operator-metrics"
+            },
+            "value": [
+              1637767954.774,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "up",
+              "endpoint": "http-metrics",
+              "instance": "10.217.0.56:8383",
+              "job": "business-automation-operator-metrics",
+              "namespace": "pam-monitor-01",
+              "pod": "business-automation-operator-55f56f5bd8-tm2fv",
+              "prometheus": "openshift-user-workload-monitoring/user-workload",
+              "service": "business-automation-operator-metrics"
+            },
+            "value": [
+              1637767954.774,
+              "1"
+            ]
+          },
+          {
+            "metric": {
+              "__name__": "up",
+              "endpoint": "prometheus",
+              "instance": "10.217.0.60:9799",
+              "job": "rhpam-app-01-kieserver-prometheus",
+              "namespace": "pam-monitor-01",
+              "pod": "rhpam-app-01-kieserver-1-jszg7",
+              "prometheus": "openshift-user-workload-monitoring/user-workload",
+              "service": "rhpam-app-01-kieserver-prometheus"
+            },
+            "value": [
+              1637767954.774,
+              "1"
+            ]
+          }
         ]
       }
-    ]
-  }
-}
+    }
 
-~~~
+    ~~~
 
 4. Create Grafana Datasource
 
-Open Grafana dashboard and select from the left menu the option **Configuration -> Data Sources**
+    Open Grafana dashboard and select from the left menu the option **Configuration -> Data Sources**
 
-![Datasource - 01](/assets/images/grafana/png/Datasource_01.png)
+    ![Datasource - 01](/assets/images/grafana/png/Datasource_01.png)
 
-In the Configuration screen click on **Add Data Source**
+    In the Configuration screen click on **Add Data Source**
 
-![Datasource - 02](/assets/images/grafana/png/Datasource_02.png)
+    ![Datasource - 02](/assets/images/grafana/png/Datasource_02.png)
 
-In the Add Data Source screen search for **Prometheus** and click on **Select**
+    In the Add Data Source screen search for **Prometheus** and click on **Select**
 
-![Datasource - 03](/assets/images/grafana/png/Datasource_03.png)
+    ![Datasource - 03](/assets/images/grafana/png/Datasource_03.png)
 
-Configure the settings:
+    Configure the settings:
 
-![Datasource - 04](/assets/images/grafana/png/Datasource_04.png)
+    ![Datasource - 04](/assets/images/grafana/png/Datasource_04.png)
 
-| Field Name | Field Value | Note|
-|------------|-------------|-----|
-| Name       | Prometheus-openshift | |
-| URL        | https:// <b><thanos querier host extracted in step 2> </b>| |
-| Skip TLS Verify| enabled | optional step, it could be enabled or not depends upon TLS Verify settings on Grafana Setup |
-| Custom HTTP Headers | Add an header named Authorization and for value put *Bearer  + the token extracted on step 1 * | this workaround is necessary since the bearer auth is not in the default authentication methods|
+    | Field Name | Field Value | Note|
+    |------------|-------------|-----|
+    | Name       | Prometheus-openshift | |
+    | URL        | https:// <b><thanos querier host extracted in step 2> </b>| |
+    | Skip TLS Verify| enabled | optional step, it could be enabled or not depends upon TLS Verify settings on Grafana Setup |
+    | Custom HTTP Headers | Add an header named Authorization and for value put *Bearer  + the token extracted on step 1 * | this workaround is necessary since the bearer auth is not in the default authentication methods|
 
-click on **Save & test**
+    click on **Save & test**
 
-![Datasource - 05](/assets/images/grafana/png/Datasource_05.png)
+    ![Datasource - 05](/assets/images/grafana/png/Datasource_05.png)
 
-if everything is ok the following banner will be displayed
+    if everything is ok the following banner will be displayed
 
-![Datasource - 06](/assets/images/grafana/png/Datasource_06.png)
+    ![Datasource - 06](/assets/images/grafana/png/Datasource_06.png)
 
 
 ### Dashboard import ###
@@ -380,15 +383,15 @@ To import the dashboard
 
 2. from the Grafana homepage select **Create - Import**
 
-![Import - 01](/assets/images/grafana/png/Import_01.png)
+    ![Import - 01](/assets/images/grafana/png/Import_01.png)
 
 3. click on **Upload JSON file**
 
-![Import - 02](/assets/images/grafana/png/Import_02.png)
+    ![Import - 02](/assets/images/grafana/png/Import_02.png)
 
 4. In the summary screen click on "Import"
 
-![Import - 03](/assets/images/grafana/png/Import_03.png)
+    ![Import - 03](/assets/images/grafana/png/Import_03.png)
 
 
 ## Grafana Dashboard details ##
@@ -400,6 +403,7 @@ The first section of the dashboard is a per-namespace summary (or a comprehensiv
 ![Dashboard - Summary](/assets/images/grafana/png/Dashboard_01.png)
 
 The panels in the group are:
+
 
 
 | Panel title| description             | prometheus metric|
@@ -416,6 +420,7 @@ The panels in the group are:
 | Execution Errors | Number of Execution errors  (since server start)  | kie_server_execution_error_total |
 | Failed Tasks | Number of Failed Tasks (since server start) | kie_server_task_failed_total |
 | Exited Tasks | Number of Exited Tasks (since server start)  | kie_server_task_exited_total |
+{:.three-column-larger-central}
 
 the metrics are always related to server start time
 
